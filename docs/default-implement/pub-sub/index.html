@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <link rel="preload" as="font" href="https://www.kokoro-rs.dev/fonts/vendor/jost/jost-v4-latin-regular.woff2" type="font/woff2" crossorigin>
+  <link rel="preload" as="font" href="https://www.kokoro-rs.dev/fonts/vendor/jost/jost-v4-latin-700.woff2"  type="font/woff2" crossorigin>
+
+
+<link rel="stylesheet" href="https://www.kokoro-rs.dev/main.css">
+
+
+
+  
+  
+    
+  
+
+  
+  
+    
+    
+  
+  
+  
+    
+  
+  
+  
+  
+    
+  
+  
+  
+
+
+  <meta name="robots" content="index, follow">
+  <meta name="googlebot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+  <meta name="bingbot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+
+
+	
+
+
+	
+
+<title>关于发布订阅者模式 | Kokoro</title>
+<meta name="description" content="发布订阅者模式，为什么，是什么，怎么用。">
+<link rel="canonical" href="https://www.kokoro-rs.dev/docs/default-implement/pub-sub/">
+
+
+
+
+
+
+
+
+
+
+<script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "BreadcrumbList",
+    
+      
+      
+        
+        
+        
+        
+        
+        
+        
+        
+          {
+            "@type": "ListItem",
+            "position":  1 ,
+            "name": "Home",
+            "item": "https://www.kokoro-rs.dev/"
+          },
+          
+          
+          {
+            "@type": "ListItem",
+            "position":  2 ,
+            "name": "Docs",
+            "item": "https://www.kokoro-rs.dev/docs/"
+          },
+        
+      
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+          
+          
+          {
+            "@type": "ListItem",
+            "position":  3 ,
+            "name": "Default Implement",
+            "item": "https://www.kokoro-rs.dev/docs/default-implement/"
+          },
+        
+      
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+          
+          
+          {
+            "@type": "ListItem",
+            "position":  4 ,
+            "name": "Pub Sub",
+            "item": "https://www.kokoro-rs.dev/docs/default-implement/pub-sub/"
+          },
+        
+      
+    
+  }
+</script>
+
+
+
+
+
+
+  <meta name="theme-color" content="#fff">
+  <link rel="apple-touch-icon" sizes="180x180" href="https://www.kokoro-rs.dev/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="https://www.kokoro-rs.dev/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="https://www.kokoro-rs.dev/favicon-16x16.png">
+  
+    <link rel="manifest" href="https://www.kokoro-rs.dev/site.webmanifest" crossorigin>
+  
+
+
+  
+
+</head>
+
+  
+
+<body class="docs single">
+  
+  
+  
+  
+<div class="header-bar fixed-top"></div>
+<header class="navbar fixed-top navbar-expand-md navbar-light">
+	<div class="container">
+		<input class="menu-btn order-0" type="checkbox" id="menu-btn">
+		<label class="menu-icon d-md-none" for="menu-btn"><span class="navicon"></span></label>
+		<a class="navbar-brand order-1 order-md-0 me-auto" href="https://www.kokoro-rs.dev">Kokoro</a>
+		<button id="mode" class="btn btn-link order-2 order-md-4" type="button" aria-label="Toggle mode">
+			<span class="toggle-dark"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-moon"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg></span>
+			<span class="toggle-light"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-sun"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg></span>
+		</button>
+		<ul class="navbar-nav fork-me order-3 order-md-5">
+			
+				
+					<li class="nav-item">
+						<a class="nav-link" href="https://github.com/kokoro-rs/kokoro"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-github"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg><span class="ms-2 visually-hidden">GitHub</span></a>
+					</li>
+				
+			
+		</ul>
+		<div class="collapse navbar-collapse order-4 order-md-1">
+			<ul class="navbar-nav main-nav me-auto order-5 order-md-2">
+				
+					
+				
+				
+				
+					
+						<li class="nav-item docs active">
+							<a class="nav-link" href="https://www.kokoro-rs.dev/docs/getting-started/introduction/">Docs</a>
+						</li>
+					
+				
+			</ul>
+			<div class="break order-6 d-md-none"></div>
+			
+				<form class="navbar-form flex-grow-1 order-7 order-md-3">
+					<input id="userinput" class="form-control is-search" type="search" placeholder="Search docs..."
+						aria-label="Search docs..." autocomplete="off">
+					<div id="suggestions" class="shadow bg-white rounded"></div>
+				</form>
+			
+		</div>
+	</div>
+</header>
+
+
+
+  
+<div class="wrap container" role="document">
+  <div class="content">
+    <div class="row flex-xl-nowrap">
+	  
+<div class="col-lg-5 col-xl-4 docs-sidebar">
+	<nav class="docs-links" aria-label="Main navigation">
+			
+			
+			
+			
+					
+					
+					
+							<h3>从这里开始</h3>
+							<ul class="list-unstyled">
+							                           
+									<li><a class="docs-link" href="https://www.kokoro-rs.dev/docs/getting-started/introduction/">引言</a></li>
+							                           
+									<li><a class="docs-link" href="https://www.kokoro-rs.dev/docs/getting-started/quick-start/">快速开始</a></li>
+							                           
+									<li><a class="docs-link" href="https://www.kokoro-rs.dev/docs/getting-started/about-core/">关于 kokoro-core</a></li>
+							
+					</ul>
+					
+					
+					
+					
+							<h3>尝试一下</h3>
+							<ul class="list-unstyled">
+							                           
+									<li><a class="docs-link" href="https://www.kokoro-rs.dev/docs/try-start/create-context/">创建上下文</a></li>
+							                           
+									<li><a class="docs-link" href="https://www.kokoro-rs.dev/docs/try-start/plug-in/">注册插件</a></li>
+							
+					</ul>
+					
+					
+					
+					
+							<h3>默认实现</h3>
+							<ul class="list-unstyled">
+							                           
+									<li><a class="docs-link active" href="https://www.kokoro-rs.dev/docs/default-implement/pub-sub/">关于发布订阅者模式</a></li>
+							                           
+									<li><a class="docs-link" href="https://www.kokoro-rs.dev/docs/default-implement/plugin/">关于插件</a></li>
+							
+					</ul>
+					
+					
+					
+					
+							<h3>帮助</h3>
+							<ul class="list-unstyled">
+							                           
+									<li><a class="docs-link" href="https://www.kokoro-rs.dev/docs/help/faq/">FAQ</a></li>
+							                           
+									<li><a class="docs-link" href="https://www.kokoro-rs.dev/docs/help/qq-group/">QQ 群</a></li>
+							
+					</ul>
+					
+					
+			
+	</nav>
+</div>
+
+	  
+  
+  <nav class="docs-toc d-none d-xl-block col-xl-3" aria-label="Secondary navigation">
+  	<div class="page-links">
+  			<h3>On this page</h3>
+  			<nav id="TableOfContents">
+  					<ul>
+  							
+  							<li><a href="https://www.kokoro-rs.dev/docs/default-implement/pub-sub/#kokoro-flume-channel">kokoro-flume-channel</a></li>
+  							
+  									<ul>
+  											
+  											<li><a href="https://www.kokoro-rs.dev/docs/default-implement/pub-sub/#shi-li-yong-fa">示例用法</a></li>
+  											
+  									</ul>
+  							
+  							
+  					</ul>
+  			</nav>
+  	</div>
+  </nav>
+  
+
+      <main class="docs-content col-lg-11 col-xl-9">
+        <h1>关于发布订阅者模式</h1>
+        <p class="lead">发布-订阅模式是一种行为设计模式，它允许多个插件或实例通过事件的发布和订阅来进行通信。
+<br/>
+在这种模式中，发布者(又称为主题)负责发布事件，而订阅者(也称为观察者)则通过订阅主题来接收这些事件。
+<br/>
+这种模式使得应用程序的不同部分能够松散耦合，并且可以动态地添加或删除订阅者。</p>
+        <h3 id="kokoro-flume-channel">kokoro-flume-channel</h3>
+<p>鉴于发布-订阅模式支持动态特性，Kokoro 也采用了这种模式。我们提供了 <code>kokoro-flume-channel</code>（以下简称 <code>flume-channel</code>），它基于 <a href="https://github.com/zesterer/flume">flume</a> 库实现了进程内的发布-订阅模式。<code>flume</code> 库的详细特性可在其<a href="https://github.com/zesterer/flume">官方仓库</a>中查看。我们对 <code>flume</code> 进行了封装，以简化发布-订阅模式的实现。</p>
+<h4 id="shi-li-yong-fa">示例用法</h4>
+<pre data-lang="rust" style="background-color:#2b303b;color:#c0c5ce;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#65737e;">// flume-channel 提供的函数，用于创建一个 `Mode` 为 `MPSC` 的 `Context`，其 `Resources` 为 `()`
+</span><span style="color:#b48ead;">let</span><span> ctx = </span><span style="color:#96b5b4;">channel_ctx</span><span>();
+</span><span>
+</span><span style="color:#65737e;">// 注册一个 `Subscriber`
+</span><span>ctx.</span><span style="color:#96b5b4;">subscribe</span><span>(..);
+</span></code></pre>
+<p><code>Subscriber</code> 是一个 <code>trait</code>，任何实现了 <code>trait Subscriber</code> 的类型都可以注册为订阅者。默认实现包括：</p>
+<ol>
+<li><code>FnMut()</code></li>
+<li><code>FnMut(&amp;Context)</code></li>
+<li><code>FnMut(Query)</code></li>
+<li><code>FnMut(&amp;Context, Query)</code></li>
+</ol>
+<p>订阅者被执行的时机由 <code>Query</code> 决定，有关 <code>Query</code> 的相关信息，请参阅 <a href="#">关于订阅查询 (待补充)</a>。</p>
+<pre data-lang="rust" style="background-color:#2b303b;color:#c0c5ce;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#65737e;">// 定义事件 `Hello`
+</span><span>#[</span><span style="color:#bf616a;">derive</span><span>(Event)]
+</span><span style="color:#b48ead;">struct </span><span>Hello(String);
+</span><span>
+</span><span style="color:#b48ead;">fn </span><span style="color:#8fa1b3;">foo</span><span>(</span><span style="color:#bf616a;">e</span><span>: &amp;Hello) {
+</span><span>    println!(&quot;</span><span style="color:#d08770;">{}</span><span>&quot;, e.</span><span style="color:#d08770;">0</span><span>);
+</span><span>}
+</span><span>
+</span><span style="color:#b48ead;">let</span><span> ctx = </span><span style="color:#96b5b4;">channel_ctx</span><span>();
+</span><span>ctx.</span><span style="color:#96b5b4;">subscribe</span><span>(foo); </span><span style="color:#65737e;">// 订阅事件 `Hello`
+</span><span>ctx.</span><span style="color:#96b5b4;">publish</span><span>(Hello(&quot;</span><span style="color:#a3be8c;">Hello World</span><span>&quot;.</span><span style="color:#96b5b4;">to_string</span><span>())); </span><span style="color:#65737e;">// 发布事件 `Hello`
+</span></code></pre>
+<p>在上述代码中，订阅者不会立即执行，因为发布操作本质上是 <code>sender.send</code>，还需要调用 <code>receiver.recv</code>。因此，我们提供了以下方法：</p>
+<ol>
+<li><code>ctx.run()</code> - 迭代 <code>receiver</code>（会阻塞线程）</li>
+<li><code>ctx.next()</code> - 单次 <code>recv</code>（暂未实现）</li>
+<li><code>ctx.run_no_block()</code> - 非阻塞迭代 <code>receiver</code>（暂未实现）</li>
+</ol>
+<p>最终，我们实现了一个简单的发布-订阅示例 <strong>Hello World</strong>：</p>
+<pre data-lang="rust" style="background-color:#2b303b;color:#c0c5ce;" class="language-rust "><code class="language-rust" data-lang="rust"><span>#[</span><span style="color:#bf616a;">derive</span><span>(Event)]
+</span><span style="color:#b48ead;">struct </span><span>Hello(String);
+</span><span style="color:#b48ead;">fn </span><span style="color:#8fa1b3;">foo</span><span>(</span><span style="color:#bf616a;">e</span><span>: &amp;Hello) {
+</span><span>    println!(&quot;</span><span style="color:#d08770;">{}</span><span>&quot;, e.</span><span style="color:#d08770;">0</span><span>);
+</span><span>}
+</span><span style="color:#b48ead;">let</span><span> ctx = </span><span style="color:#96b5b4;">channel_ctx</span><span>();
+</span><span>ctx.</span><span style="color:#96b5b4;">subscribe</span><span>(foo);
+</span><span>ctx.</span><span style="color:#96b5b4;">publish</span><span>(Hello(&quot;</span><span style="color:#a3be8c;">Hello World</span><span>&quot;.</span><span style="color:#96b5b4;">to_string</span><span>()));
+</span><span style="color:#65737e;">// 运行
+</span><span>ctx.</span><span style="color:#96b5b4;">run</span><span>();
+</span><span style="color:#65737e;">// 输出：Hello World
+</span></code></pre>
+<p>在 <code>kokoro-flume-channel</code> 中，一个事件可以由多个发布者发布，并且可以由多个订阅者订阅。需要注意的是，这是一个广播系统，而不是单一消费者模型。</p>
+<p>在 <strong>Hello World</strong> 示例中，发布操作并不是常规的发布方式。发布者应在单独的线程中工作，以便与 <code>ctx.run()</code> 协同运行。关于线程的生成和终止时机，请参阅 <a href="#"><strong>关于线程</strong> (待补充)</a>。</p>
+
+        
+        
+<div class="docs-navigation d-flex justify-content-between">
+  
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+          
+        
+      
+        
+        
+          
+        
+      
+        
+        
+          
+            
+              
+              <a href="https:&#x2F;&#x2F;www.kokoro-rs.dev&#x2F;docs&#x2F;try-start&#x2F;plug-in&#x2F;">
+                <div class="card my-1">
+                  <div class="card-body py-2">
+                    &larr; 注册插件
+                  </div>
+                </div>
+              </a>
+            
+            
+            
+          
+        
+      
+        
+        
+          
+        
+      
+    
+  
+
+  
+  
+  
+  
+  
+    
+    
+    
+      
+      
+        
+      
+    
+      
+      
+        
+      
+    
+      
+      
+        
+      
+    
+      
+      
+        
+          
+          
+          <a class="ms-auto" href="https:&#x2F;&#x2F;www.kokoro-rs.dev&#x2F;docs&#x2F;help&#x2F;faq&#x2F;">
+            <div class="card my-1">
+              <div class="card-body py-2">
+                FAQ &rarr;
+              </div>
+            </div>
+          </a>
+          
+          
+          
+        
+      
+    
+  
+</div>
+
+      </main>
+    </div>
+  </div>
+</div>
+
+
+  
+    
+<footer class="footer text-muted">
+	<div class="container">
+		<div class="row">
+			<div class="col-lg-8 order-last order-lg-first">
+				<ul class="list-inline">
+					
+						<li class="list-inline-item"><a href="https://github.com/cordiverse/cordis">cordis</a> 是 <a href="#">Kokoro</a> 出现的直接原因。</li>
+					
+				</ul>
+			</div>
+			<div class="col-lg-8 order-first order-lg-last text-lg-end">
+				<ul class="list-inline">
+					
+				</ul>
+			</div>
+		</div>
+	</div>
+</footer>
+
+  
+
+  
+<script type="text/javascript" src="https://www.kokoro-rs.dev/js/main.js" defer></script>
+
+  <script type="text/javascript" src="https://www.kokoro-rs.dev/plugins/elasticlunr.min.js" defer></script>
+  <script type="text/javascript" src="https://www.kokoro-rs.dev/search_index.en.js" defer></script>
+  <script type="text/javascript" src="https://www.kokoro-rs.dev/js/search.js" defer></script>
+
+  
+</body>
+</html>

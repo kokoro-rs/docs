@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <link rel="preload" as="font" href="https://www.kokoro-rs.dev/fonts/vendor/jost/jost-v4-latin-regular.woff2" type="font/woff2" crossorigin>
+  <link rel="preload" as="font" href="https://www.kokoro-rs.dev/fonts/vendor/jost/jost-v4-latin-700.woff2"  type="font/woff2" crossorigin>
+
+
+<link rel="stylesheet" href="https://www.kokoro-rs.dev/main.css">
+
+
+
+  
+  
+    
+  
+
+  
+  
+    
+    
+  
+  
+  
+    
+  
+  
+  
+  
+    
+  
+  
+  
+
+
+  <meta name="robots" content="index, follow">
+  <meta name="googlebot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+  <meta name="bingbot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+
+
+	
+
+
+	
+
+<title>创建上下文 | Kokoro</title>
+<meta name="description" content="如何创建上下文">
+<link rel="canonical" href="https://www.kokoro-rs.dev/docs/try-start/create-context/">
+
+
+
+
+
+
+
+
+
+
+<script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "BreadcrumbList",
+    
+      
+      
+        
+        
+        
+        
+        
+        
+        
+        
+          {
+            "@type": "ListItem",
+            "position":  1 ,
+            "name": "Home",
+            "item": "https://www.kokoro-rs.dev/"
+          },
+          
+          
+          {
+            "@type": "ListItem",
+            "position":  2 ,
+            "name": "Docs",
+            "item": "https://www.kokoro-rs.dev/docs/"
+          },
+        
+      
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+          
+          
+          {
+            "@type": "ListItem",
+            "position":  3 ,
+            "name": "Try Start",
+            "item": "https://www.kokoro-rs.dev/docs/try-start/"
+          },
+        
+      
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+          
+          
+          {
+            "@type": "ListItem",
+            "position":  4 ,
+            "name": "Create Context",
+            "item": "https://www.kokoro-rs.dev/docs/try-start/create-context/"
+          },
+        
+      
+    
+  }
+</script>
+
+
+
+
+
+
+  <meta name="theme-color" content="#fff">
+  <link rel="apple-touch-icon" sizes="180x180" href="https://www.kokoro-rs.dev/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="https://www.kokoro-rs.dev/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="https://www.kokoro-rs.dev/favicon-16x16.png">
+  
+    <link rel="manifest" href="https://www.kokoro-rs.dev/site.webmanifest" crossorigin>
+  
+
+
+  
+
+</head>
+
+  
+
+<body class="docs single">
+  
+  
+  
+  
+<div class="header-bar fixed-top"></div>
+<header class="navbar fixed-top navbar-expand-md navbar-light">
+	<div class="container">
+		<input class="menu-btn order-0" type="checkbox" id="menu-btn">
+		<label class="menu-icon d-md-none" for="menu-btn"><span class="navicon"></span></label>
+		<a class="navbar-brand order-1 order-md-0 me-auto" href="https://www.kokoro-rs.dev">Kokoro</a>
+		<button id="mode" class="btn btn-link order-2 order-md-4" type="button" aria-label="Toggle mode">
+			<span class="toggle-dark"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-moon"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg></span>
+			<span class="toggle-light"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-sun"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg></span>
+		</button>
+		<ul class="navbar-nav fork-me order-3 order-md-5">
+			
+				
+					<li class="nav-item">
+						<a class="nav-link" href="https://github.com/kokoro-rs/kokoro"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-github"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg><span class="ms-2 visually-hidden">GitHub</span></a>
+					</li>
+				
+			
+		</ul>
+		<div class="collapse navbar-collapse order-4 order-md-1">
+			<ul class="navbar-nav main-nav me-auto order-5 order-md-2">
+				
+					
+				
+				
+				
+					
+						<li class="nav-item docs active">
+							<a class="nav-link" href="https://www.kokoro-rs.dev/docs/getting-started/introduction/">Docs</a>
+						</li>
+					
+				
+			</ul>
+			<div class="break order-6 d-md-none"></div>
+			
+				<form class="navbar-form flex-grow-1 order-7 order-md-3">
+					<input id="userinput" class="form-control is-search" type="search" placeholder="Search docs..."
+						aria-label="Search docs..." autocomplete="off">
+					<div id="suggestions" class="shadow bg-white rounded"></div>
+				</form>
+			
+		</div>
+	</div>
+</header>
+
+
+
+  
+<div class="wrap container" role="document">
+  <div class="content">
+    <div class="row flex-xl-nowrap">
+	  
+<div class="col-lg-5 col-xl-4 docs-sidebar">
+	<nav class="docs-links" aria-label="Main navigation">
+			
+			
+			
+			
+					
+					
+					
+							<h3>从这里开始</h3>
+							<ul class="list-unstyled">
+							                           
+									<li><a class="docs-link" href="https://www.kokoro-rs.dev/docs/getting-started/introduction/">引言</a></li>
+							                           
+									<li><a class="docs-link" href="https://www.kokoro-rs.dev/docs/getting-started/quick-start/">快速开始</a></li>
+							                           
+									<li><a class="docs-link" href="https://www.kokoro-rs.dev/docs/getting-started/about-core/">关于 kokoro-core</a></li>
+							
+					</ul>
+					
+					
+					
+					
+							<h3>尝试一下</h3>
+							<ul class="list-unstyled">
+							                           
+									<li><a class="docs-link active" href="https://www.kokoro-rs.dev/docs/try-start/create-context/">创建上下文</a></li>
+							                           
+									<li><a class="docs-link" href="https://www.kokoro-rs.dev/docs/try-start/plug-in/">注册插件</a></li>
+							
+					</ul>
+					
+					
+					
+					
+							<h3>默认实现</h3>
+							<ul class="list-unstyled">
+							                           
+									<li><a class="docs-link" href="https://www.kokoro-rs.dev/docs/default-implement/pub-sub/">关于发布订阅者模式</a></li>
+							                           
+									<li><a class="docs-link" href="https://www.kokoro-rs.dev/docs/default-implement/plugin/">关于插件</a></li>
+							
+					</ul>
+					
+					
+					
+					
+							<h3>帮助</h3>
+							<ul class="list-unstyled">
+							                           
+									<li><a class="docs-link" href="https://www.kokoro-rs.dev/docs/help/faq/">FAQ</a></li>
+							                           
+									<li><a class="docs-link" href="https://www.kokoro-rs.dev/docs/help/qq-group/">QQ 群</a></li>
+							
+					</ul>
+					
+					
+			
+	</nav>
+</div>
+
+	  
+  
+  <nav class="docs-toc d-none d-xl-block col-xl-3" aria-label="Secondary navigation">
+  	<div class="page-links">
+  			<h3>On this page</h3>
+  			<nav id="TableOfContents">
+  					<ul>
+  							
+  							<li><a href="https://www.kokoro-rs.dev/docs/try-start/create-context/#li-jie-context">理解 Context</a></li>
+  							
+  									<ul>
+  											
+  											<li><a href="https://www.kokoro-rs.dev/docs/try-start/create-context/#fan-xing-can-shu-resource-he-mode">泛型参数：Resource 和 Mode</a></li>
+  											
+  											<li><a href="https://www.kokoro-rs.dev/docs/try-start/create-context/#gong-zuo-mo-shi-de-xuan-ze">工作模式的选择</a></li>
+  											
+  											<li><a href="https://www.kokoro-rs.dev/docs/try-start/create-context/#kuai-su-chuang-jian-context">快速创建 Context</a></li>
+  											
+  									</ul>
+  							
+  							
+  							<li><a href="https://www.kokoro-rs.dev/docs/try-start/create-context/#zi-ding-yi-context">自定义 Context</a></li>
+  							
+  									<ul>
+  											
+  											<li><a href="https://www.kokoro-rs.dev/docs/try-start/create-context/#zi-ding-yi-resource">自定义 Resource</a></li>
+  											
+  											<li><a href="https://www.kokoro-rs.dev/docs/try-start/create-context/#chuang-jian-zi-ding-yi-context">创建自定义 Context</a></li>
+  											
+  									</ul>
+  							
+  							
+  							<li><a href="https://www.kokoro-rs.dev/docs/try-start/create-context/#jie-yu">结语</a></li>
+  							
+  							
+  					</ul>
+  			</nav>
+  	</div>
+  </nav>
+  
+
+      <main class="docs-content col-lg-11 col-xl-9">
+        <h1>创建上下文</h1>
+        <p class="lead">本文将带您了解如何在 Kokoro 中构建上下文。</p>
+        <h2 id="li-jie-context">理解 Context</h2>
+<p>在 Kokoro 框架中，<code>Context</code> 是核心组件，负责协调资源和行为模式。</p>
+<h3 id="fan-xing-can-shu-resource-he-mode">泛型参数：Resource 和 Mode</h3>
+<p><code>Context</code> 结构体包含两个泛型参数：<code>Resource</code> 和 <code>Mode</code>，它们定义了上下文的资源类型和工作模式。</p>
+<h3 id="gong-zuo-mo-shi-de-xuan-ze">工作模式的选择</h3>
+<p>您需要首先确定 <code>Context</code> 的工作模式。在本例中，我们采用 <code>MPSC</code> 模式，该模式源自 <a href="../../default-implement/pub-sub">kokoro-flume-channel</a>，支持发布-订阅机制，适用于 <code>kokoro-plugin-tiny-http</code> 等基于发布-订阅的插件。</p>
+<h3 id="kuai-su-chuang-jian-context">快速创建 Context</h3>
+<p>使用 <a href="../../default-implement/pub-sub">kokoro-flume-channel</a> 提供的工具函数，您可以轻松创建一个 <code>MPSC</code> 模式的 <code>Context</code>：</p>
+<pre data-lang="rust" style="background-color:#2b303b;color:#c0c5ce;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#b48ead;">fn </span><span style="color:#8fa1b3;">main</span><span>() {
+</span><span>    </span><span style="color:#65737e;">// 在 MPSC 模式下初始化上下文
+</span><span>    </span><span style="color:#b48ead;">let</span><span> ctx = </span><span style="color:#96b5b4;">channel_ctx</span><span>();
+</span><span>}
+</span></code></pre>
+<p>默认情况下，创建的 <code>Context</code> 的 <code>Resource</code> 类型为 <code>()</code>，这意味着初始资源为空。</p>
+<h2 id="zi-ding-yi-context">自定义 Context</h2>
+<p>进阶用户可能希望从头开始构建自定义的 <code>Context</code>。</p>
+<h3 id="zi-ding-yi-resource">自定义 Resource</h3>
+<p>例如，如果您希望 <code>Resource</code> 使用自定义类型，如下所示：</p>
+<pre data-lang="rust" style="background-color:#2b303b;color:#c0c5ce;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#b48ead;">struct </span><span>MyName {
+</span><span>    </span><span style="color:#bf616a;">name</span><span>: String
+</span><span>}
+</span></code></pre>
+<h3 id="chuang-jian-zi-ding-yi-context">创建自定义 Context</h3>
+<p>您可以按照以下步骤创建一个携带自定义资源的 <code>Context</code>：</p>
+<pre data-lang="rust" style="background-color:#2b303b;color:#c0c5ce;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#b48ead;">fn </span><span style="color:#8fa1b3;">main</span><span>() {
+</span><span>    </span><span style="color:#b48ead;">let</span><span> res = MyName { name: &quot;</span><span style="color:#a3be8c;">Kokoro</span><span>&quot;.</span><span style="color:#96b5b4;">to_string</span><span>() };
+</span><span>    </span><span style="color:#b48ead;">let</span><span> scope = Scope::create(Arc::new(res));
+</span><span>    </span><span style="color:#b48ead;">let</span><span> mode = </span><span style="color:#d08770;">MPSC</span><span>::&lt;()&gt;::default();
+</span><span>    </span><span style="color:#b48ead;">let</span><span> ctx = Context::create(Arc::new(scope), Arc::new(mode));
+</span><span>}
+</span></code></pre>
+<p>在这个过程中，您会看到多个 <code>Arc</code> 的使用，这是为了确保资源在多线程中的安全共享。</p>
+<p><code>Scope</code> 是另一个重要概念，我们将在后续章节中详细介绍。</p>
+<h2 id="jie-yu">结语</h2>
+<p>通过以上步骤，您可以灵活地创建和管理 Kokoro 中的上下文，为接下来的开发打下坚实基础。</p>
+<p>在成功创建 Context 之后，下一步是将插件注册到上下文中。详细请参阅 <a href="../plug-in"><strong>注册插件</strong></a> 部分。</p>
+
+        
+        
+<div class="docs-navigation d-flex justify-content-between">
+  
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+          
+        
+      
+        
+        
+          
+        
+      
+        
+        
+          
+        
+      
+        
+        
+          
+            
+              
+              <a href="https:&#x2F;&#x2F;www.kokoro-rs.dev&#x2F;docs&#x2F;getting-started&#x2F;about-core&#x2F;">
+                <div class="card my-1">
+                  <div class="card-body py-2">
+                    &larr; 关于 kokoro-core
+                  </div>
+                </div>
+              </a>
+            
+            
+            
+          
+        
+      
+    
+  
+
+  
+  
+  
+  
+  
+    
+    
+    
+      
+      
+        
+      
+    
+      
+      
+        
+      
+    
+      
+      
+        
+          
+          
+          <a class="ms-auto" href="https:&#x2F;&#x2F;www.kokoro-rs.dev&#x2F;docs&#x2F;default-implement&#x2F;pub-sub&#x2F;">
+            <div class="card my-1">
+              <div class="card-body py-2">
+                关于发布订阅者模式 &rarr;
+              </div>
+            </div>
+          </a>
+          
+          
+          
+        
+      
+    
+      
+      
+        
+      
+    
+  
+</div>
+
+      </main>
+    </div>
+  </div>
+</div>
+
+
+  
+    
+<footer class="footer text-muted">
+	<div class="container">
+		<div class="row">
+			<div class="col-lg-8 order-last order-lg-first">
+				<ul class="list-inline">
+					
+						<li class="list-inline-item"><a href="https://github.com/cordiverse/cordis">cordis</a> 是 <a href="#">Kokoro</a> 出现的直接原因。</li>
+					
+				</ul>
+			</div>
+			<div class="col-lg-8 order-first order-lg-last text-lg-end">
+				<ul class="list-inline">
+					
+				</ul>
+			</div>
+		</div>
+	</div>
+</footer>
+
+  
+
+  
+<script type="text/javascript" src="https://www.kokoro-rs.dev/js/main.js" defer></script>
+
+  <script type="text/javascript" src="https://www.kokoro-rs.dev/plugins/elasticlunr.min.js" defer></script>
+  <script type="text/javascript" src="https://www.kokoro-rs.dev/search_index.en.js" defer></script>
+  <script type="text/javascript" src="https://www.kokoro-rs.dev/js/search.js" defer></script>
+
+  
+</body>
+</html>
